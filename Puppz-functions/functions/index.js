@@ -3,30 +3,33 @@ const admin = require('firebase-admin')
 
 admin.initializeApp()
 
-exports.helloWorld = functions.https.onRequest((request, response) => {
-  functions.logger.info("Hello logs!", {structuredData: true});
-  response.send("Hello World!");
-});
+const express = require('express')
+const app = express()
 
-exports.getWoofs = functions.https.onRequest((req, res) => {
-    admin.firestore().collection('woofs').get()
+
+app.get('/woofs', (req, res)=> {
+        admin
+        .firestore()
+        .collection('woofs')
+        .get()
         .then(data => {
             let woofs = []
             data.forEach(doc => {
                 woofs.push(doc.data())
+             })
+             return res.json(woofs)
             })
-            return res.json(woofs)
-        })
-            .catch(err => console.error(err))
+        .catch(err => console.error(err))
 })  
-
-exports.createWoof = functions.https.onRequest((req, res) => {
+app.post('/woof',(req, res) => {
+    
     const newWoof = {
         body: req.body.body,
         userHandle: req.body.userHandle,
         createdAt: admin.firestore.Timestamp.fromDate(new Date())
     }
-    admin.firestore()
+    admin
+        .firestore()
         .collection('woofs')
         .add(newWoof)
         .then(doc => {
@@ -37,3 +40,5 @@ exports.createWoof = functions.https.onRequest((req, res) => {
             console.error(err)
         })  
 })
+
+exports.api = functions.https.onRequest(app)
