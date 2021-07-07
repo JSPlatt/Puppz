@@ -11,11 +11,17 @@ app.get('/woofs', (req, res)=> {
         admin
         .firestore()
         .collection('woofs')
+        .orderBy('createdAt', 'desc')
         .get()
         .then(data => {
             let woofs = []
             data.forEach(doc => {
-                woofs.push(doc.data())
+                woofs.push({
+                    woofId: doc.id,
+                    body: doc.data().body,
+                    userHandle: doc.data().userHanlde,
+                    createdAt: doc.data().createdAt
+                })
              })
              return res.json(woofs)
             })
@@ -26,7 +32,7 @@ app.post('/woof',(req, res) => {
     const newWoof = {
         body: req.body.body,
         userHandle: req.body.userHandle,
-        createdAt: admin.firestore.Timestamp.fromDate(new Date())
+        createdAt: new Date().toISOString()
     }
     admin
         .firestore()
