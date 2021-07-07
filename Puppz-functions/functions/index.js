@@ -2,9 +2,10 @@ const functions = require("firebase-functions");
 const admin = require('firebase-admin')
 const app = require('express')()
 admin.initializeApp()
+require('dotenv').config()
 
 const config = {
-    apiKey: "AIzaSyBGI4jr331la72In2uLU6_UDP5u-ZujawI",
+    apiKey: process.env.API_KEY,
     authDomain: "puppz-cc9cc.firebaseapp.com",
     projectId: "puppz-cc9cc",
     storageBucket: "puppz-cc9cc.appspot.com",
